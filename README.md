@@ -12,7 +12,7 @@ is displayed.
 
 ## Endpoints
 
-Dev: https://2zex8y9jv6.execute-api.us-east-1.amazonaws.com/dev/zip
+Dev: https://et38wpo387.execute-api.us-east-1.amazonaws.com/dev/download
 
 ## Deployment
 
