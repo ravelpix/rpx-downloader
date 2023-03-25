@@ -5,8 +5,8 @@ AWS.config.region = process.env.REGION;
 const S3 = new AWS.S3();
 const SSM = new AWS.SSM(); // jwt credentials
 const axios = require('axios'); // api call
-const sharp = require('sharp'); // image resizing
-const PassThrough = require('stream').PassThrough; // image copying to s3
+const sharp = require('sharp'); // photo resizing
+const PassThrough = require('stream').PassThrough; // photo copying to s3
 
 const ALLOWED_FORMATS = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
 const WIDTHS = ['0', '100', '300', '500', '750', '1000', '1500', '2500'];
@@ -222,18 +222,14 @@ async function getParams(event) {
   if (WIDTHS.indexOf(width) < 0) { width = 1000; }
   width = parseInt(width, 10);
 
-  if (!event.pathParameters.key) {
-    throw new Error('invalidParams')
-  }
-  const image = event.pathParameters.key;
-  const photoId = image.split('.')[0];
-  if (!photoId) {
-    throw new Error('missingPhoto');
-  }
-
   let albumId;
+  let photoId;
   if (event.queryStringParameters) {
     albumId = event.queryStringParameters.albumId;
+    photoId = event.queryStringParameters.photoId;
+  }
+  if (!photoId) {
+    throw new Error('missingPhoto');
   }
   if (!albumId) {
     throw new Error('missingAlbum');
@@ -245,7 +241,7 @@ async function getParams(event) {
     throw new Error('missingJwt');
   }
 
-  return { width, image, albumId, photoId, jwtToken };
+  return { width, albumId, photoId, jwtToken };
 }
 
 async function getJwtToken() {
