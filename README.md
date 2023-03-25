@@ -83,8 +83,12 @@ You can then test your function locally by using the following command:
 The event.mock.json file should contain something like the following:
 
 {
-  "body": "{\"albumId\":\"178ce96a-a9f3-470f-8846-5217cb0b7469\", \"width\": \"500\", \"type\": \"processed\"}",
-  "headers": { "Authorization": "Bearer :jwtTokenHere" }
+  "queryStringParameters": {
+    "photoId": "1106567c-bd13-4ea3-b840-e442f23d924e",
+    "albumId":"178ce96a-a9f3-470f-8846-5217cb0b7469",
+    "width": "100"
+  },
+  "headers": { "Authorization": "Bearer JWT_TOKEN_HERE" }
 }
 
 You will need to replace the :jwtTokenHere with a value that will work. You can get this token from the ops app.
