@@ -1,0 +1,20 @@
+{
+  "name": "rpx-downloader",
+  "version": "1.0.0",
+  "description": "Ravelpix resized photo downloader",
+  "main": "handler.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Pangurbahn, Inc.",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@sendgrid/mail": "^7.7.0",
+    "axios": "^1.3.4",
+    "sharp": "^0.31.3",
+    "stream": "0.0.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.1343.0"
+  }
+}

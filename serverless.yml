@@ -1,0 +1,96 @@
+service: rpx-downloader
+
+frameworkVersion: '3'
+
+custom:
+  stage: ${opt:stage, self:custom.defaultStage}
+  defaultStage: dev
+  env:
+    dev:
+      imageBucket: rpxdev
+      downloadBucket: rpx-downloads
+      region: us-east-1
+      apiEndpoint: https://4d44-71-126-181-218.ngrok.io
+      ssmJwtParam: dev-ravelpix-rails-jwt
+      ssmEmailParam: sendgrid-ops-transactional
+      supportEmail: ops@ravelpix.com
+      enabled: true
+      description: '[DEV] Ravelpix Downloader. Forces download of resized photo in browser.'
+    staging:
+      imageBucket: rpximgstaging
+      downloadBucket: rpx-downloads
+      region: us-east-1
+      apiEndpoint: https://rpxstaging.herokuapp.com/
+      ssmJwtParam: staging-ravelpix-rails-jwt
+      ssmEmailParam: sendgrid-ops-transactional
+      supportEmail: ops@ravelpix.com
+      enabled: true
+      description: '[STAGING] Ravelpix Downloader. Forces download of resized photo in browser.'
+    prod:
+      imageBucket: rvlpx
+      downloadBucket: rpx-downloads
+      region: us-east-1
+      apiEndpoint: https://2b5efcdd.ngrok.io
+      ssmJwtParam: prod-ravelpix-rails-jwt
+      ssmEmailParam: sendgrid-ops-transactional
+      supportEmail: ops@ravelpix.com
+      enabled: true
+      description: '[PROD] Ravelpix Downloader. Forces download of resized photo in browser.'
+
+provider:
+  name: aws
+  runtime: nodejs14.x
+  region: ${self:custom.env.${self:custom.stage}.region}
+  memorySize: 2048
+  apiGateway:
+    binaryMediaTypes:
+      - '*/*'
+  iam:
+    role:
+      statements:
+        - Effect: "Allow"
+          Action:
+            - "s3:Get*"
+            - "s3:Put*"
+            - "s3:List*"
+          Resource:
+            - "arn:aws:s3:::${self:custom.env.${self:custom.stage}.imageBucket}"
+            - "arn:aws:s3:::${self:custom.env.${self:custom.stage}.imageBucket}/*"
+            - "arn:aws:s3:::${self:custom.env.${self:custom.stage}.downloadBucket}"
+            - "arn:aws:s3:::${self:custom.env.${self:custom.stage}.downloadBucket}/*"
+        - Effect: "Allow"
+          Action:
+            - "ssm:GetParameter"
+            - "ssm:DescribeParameters"
+          Resource: "arn:aws:ssm:${self:provider.region}:*:parameter/${self:custom.env.${self:custom.stage}.ssmJwtParam}*"
+        - Effect: "Allow"
+          Action:
+            - "ssm:GetParameter"
+            - "ssm:DescribeParameters"
+          Resource: "arn:aws:ssm:${self:provider.region}:*:parameter/${self:custom.env.${self:custom.stage}.ssmEmailParam}*"
+        - Effect: "Allow"
+          Action:
+            - "kms:Decrypt"
+          Resource: "arn:aws:kms:${self:provider.region}:*:key/alias/aws/ssm"
+
+functions:
+  download:
+    handler: handler.download
+    timeout: 30
+    events:
+      - http:
+          method: get
+          path: download
+          cors: true
+    environment:
+      REGION: ${self:custom.env.${self:custom.stage}.region}
+      SSM_JWT_PARAM: ${self:custom.env.${self:custom.stage}.ssmJwtParam}
+      SSM_EMAIL_PARAM: ${self:custom.env.${self:custom.stage}.ssmEmailParam}
+      API_ENDPOINT: ${self:custom.env.${self:custom.stage}.apiEndpoint}
+      IMAGE_BUCKET: ${self:custom.env.${self:custom.stage}.imageBucket}
+      DOWNLOAD_BUCKET: ${self:custom.env.${self:custom.stage}.downloadBucket}
+      ENABLED: ${self:custom.env.${self:custom.stage}.enabled}
+      SUPPORT_EMAIL: ${self:custom.env.${self:custom.stage}.supportEmail}
+
+resources:
+  Description: ${self:custom.env.${self:custom.stage}.description}
