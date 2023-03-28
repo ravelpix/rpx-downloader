@@ -53,7 +53,7 @@ module.exports.download = async (event) => {
 };
 
 async function resize(resource, params) {
-  //try {
+  try {
     const resourceMeta = parseContentType(resource.s3Key);
     const resourceReadStream = readStream({
       Bucket: resource.s3Bucket,
@@ -96,11 +96,11 @@ async function resize(resource, params) {
         .pipe(resourceWriteStream);
     }
 
-    await uploaded
-  // } catch(error) {
-  //   sendEmail(`Resizing Error ${resource.id}::${resource.s3Key}::${ERRORS.resizeFailure}: ${size} ${error}`);
-  //   return false;
-  // }
+    await uploaded;
+  } catch(error) {
+    sendEmail(`Resizing Error ${resource.id}::${resource.s3Key}::${ERRORS.resizeFailure}: ${size} ${error}`);
+    return false;
+  }
 }
 
 function readStream({ Bucket, Key }) {
