@@ -10,7 +10,7 @@ custom:
       imageBucket: rpxdev
       downloadBucket: rpx-downloads
       region: us-east-1
-      apiEndpoint: https://4d44-71-126-181-218.ngrok.io
+      apiEndpoint: https://f449-71-126-181-218.ngrok.io
       ssmJwtParam: dev-ravelpix-rails-jwt
       ssmEmailParam: sendgrid-ops-transactional
       supportEmail: ops@ravelpix.com

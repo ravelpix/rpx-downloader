@@ -64,8 +64,11 @@ async function resize(resource, params) {
       Bucket: process.env.DOWNLOAD_BUCKET,
       Key: resource.filename
     });
+    
     // If it is a pdf we can't resize it, so don't try.
-    if (resourceMeta.format !== 'pdf') {
+    // If the width parameter is passed in, we do not resize the image
+    // and instead pass through the original unsized photo.
+    if (resourceMeta.format !== 'pdf' && params.width !== 0) {
       const streamResize = sharp()
       .resize({
         width: params.width,
