@@ -14,6 +14,8 @@ is displayed.
 
 Dev: https://et38wpo387.execute-api.us-east-1.amazonaws.com/dev/download
 
+Staging: https://hkgqtew0eh.execute-api.us-east-2.amazonaws.com/staging/download
+
 Production: https://g78fnz1xkf.execute-api.us-east-1.amazonaws.com/prod/download
 
 ## Deployment
