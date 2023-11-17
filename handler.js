@@ -9,7 +9,8 @@ const sharp = require('sharp'); // photo resizing
 const PassThrough = require('stream').PassThrough; // photo copying to s3
 
 const ALLOWED_FORMATS = ['jpg', 'jpeg', 'png', 'webp', 'pdf'];
-const WIDTHS = ['0', '100', '300', '500', '750', '1000', '1500', '2500'];
+// If width passed in is 0, we don't resize the photos
+const WIDTHS = [0, 100, 300, 500, 750, 1000, 1500, 2500, 3360];
 
 const ERRORS = {
   missingRequiredParams: 10,
@@ -32,7 +33,7 @@ module.exports.download = async (event) => {
     return renderErrorPage([ERRORS[error]]);
   }
 
-  const downloadInfo = await getResourceDownloadInfo(event, params);
+  const downloadInfo = await getResourceDownloadInfo(params);
 
   if (!downloadInfo.data || downloadInfo.data.length === 0 || (downloadInfo.data.errors && downloadInfo.data.errors == 'Missing resource')) {
     return renderErrorPage([ERRORS.missingPhoto]);
@@ -194,13 +195,20 @@ async function successResponse(resource) {
 //   s3Key: string;
 //   filename: string;
 // }
-async function getResourceDownloadInfo(event, params) {
+async function getResourceDownloadInfo(params) {
   try {
     const parameter = await SSM.getParameter({ 
       Name: process.env.SSM_JWT_PARAM,
       WithDecryption: true 
     }).promise();
     const jwtToken = parameter.Parameter.Value;
+
+    const payload = { albumId: params.albumId, width: params.width }
+    if (params.originalWidth.indexOf('web') > -1 || params.originalWidth.indexOf('original') > -1) {
+      payload.width = params.originalWidth;
+    } else {
+      payload.width = params.width;
+    }
 
     return await axios.get(
       `${process.env.API_ENDPOINT}/photos/${params.photoId}/download_file`,
@@ -209,7 +217,7 @@ async function getResourceDownloadInfo(event, params) {
           Authorization: `Bearer ${jwtToken}`,
           'Content-Type': 'application/json'
         },
-        params: { albumId: params.albumId, width: params.width }
+        params: payload
       }
     );
   } catch(error) {
@@ -222,7 +230,11 @@ async function getParams(event) {
     throw new Error({ message: 'Missing width param' });
   }
   let width = event.queryStringParameters.width;
-  if (WIDTHS.indexOf(width) < 0) { width = 1000; }
+  let originalWidth = `${width}`;
+  if (width === undefined || width === null) { width = 1800; }
+  if (width === 'web') { width = 1800; }
+  if (width === 'original') { width = 0; }
+  if (WIDTHS.indexOf(parseInt(width, 10)) < 0) { width = 1800; }
   width = parseInt(width, 10);
 
   let albumId;
@@ -238,21 +250,7 @@ async function getParams(event) {
     throw new Error('missingAlbum');
   }
 
-  let jwtToken = await getJwtToken();
-  jwtToken = jwtToken.Parameter.Value;
-  if (!jwtToken) {
-    throw new Error('missingJwt');
-  }
-
-  return { width, albumId, photoId, jwtToken };
-}
-
-async function getJwtToken() {
-  try {
-    return await SSM.getParameter({ Name: process.env.SSM_JWT_PARAM, WithDecryption: true }).promise();
-  } catch(error) {
-    throw new Error({ message: `Could not get JWT token ${error}` });
-  }
+  return { originalWidth, width, albumId, photoId };
 }
 
 function parseContentType(key) {

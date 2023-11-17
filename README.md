@@ -14,6 +14,8 @@ is displayed.
 
 Dev: https://et38wpo387.execute-api.us-east-1.amazonaws.com/dev/download
 
+Production: https://g78fnz1xkf.execute-api.us-east-1.amazonaws.com/prod/download
+
 ## Deployment
 
 ### App Deploy
@@ -21,12 +23,12 @@ Dev: https://et38wpo387.execute-api.us-east-1.amazonaws.com/dev/download
 If changes have been made to the serverless.yml, you need to deploy the entire app.
 
 #### Development Deploy
-    $ nvm use v14.17.4
+    $ nvm use v16.20.2
     $ export AWS_PROFILE=ravelpix
     $ rm -rf node_modules/sharp && SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp && sls deploy --stage dev
 
 #### Production Deploy
-    $ nvm use v14.17.4
+    $ nvm use v16.20.2
     $ export AWS_PROFILE=ravelpix
     $ rm -rf node_modules/sharp && SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp && sls deploy --stage prod
 

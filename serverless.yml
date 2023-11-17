@@ -8,29 +8,29 @@ custom:
   env:
     dev:
       imageBucket: rpxdev
-      downloadBucket: rpx-downloads
+      downloadBucket: rpxdevd
       region: us-east-1
-      apiEndpoint: https://f449-71-126-181-218.ngrok.io
+      apiEndpoint: https://localhost:3000
       ssmJwtParam: dev-ravelpix-rails-jwt
       ssmEmailParam: sendgrid-ops-transactional
       supportEmail: ops@ravelpix.com
       enabled: true
       description: '[DEV] Ravelpix Downloader. Forces download of resized photo in browser.'
     staging:
-      imageBucket: rpximgstaging
-      downloadBucket: rpx-downloads
-      region: us-east-1
-      apiEndpoint: https://rpxstaging.herokuapp.com/
+      imageBucket: rpxstaging
+      downloadBucket: rpxstagingd
+      region: us-east-2
+      apiEndpoint: https://2e3a5ee3-64b9-4574-9f82-b97f3bef5b9d.ravelpix.com
       ssmJwtParam: staging-ravelpix-rails-jwt
       ssmEmailParam: sendgrid-ops-transactional
       supportEmail: ops@ravelpix.com
       enabled: true
       description: '[STAGING] Ravelpix Downloader. Forces download of resized photo in browser.'
     prod:
-      imageBucket: rvlpx
-      downloadBucket: rpx-downloads
-      region: us-east-1
-      apiEndpoint: https://2b5efcdd.ngrok.io
+      imageBucket: rpx1
+      downloadBucket: rpxd
+      region: us-east-2
+      apiEndpoint: https://api.ravelpix.com
       ssmJwtParam: prod-ravelpix-rails-jwt
       ssmEmailParam: sendgrid-ops-transactional
       supportEmail: ops@ravelpix.com
@@ -39,7 +39,7 @@ custom:
 
 provider:
   name: aws
-  runtime: nodejs14.x
+  runtime: nodejs16.x
   region: ${self:custom.env.${self:custom.stage}.region}
   memorySize: 2048
   apiGateway:
