@@ -27,6 +27,11 @@ If changes have been made to the serverless.yml, you need to deploy the entire a
     $ export AWS_PROFILE=ravelpix
     $ rm -rf node_modules/sharp && SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp && sls deploy --stage dev
 
+#### Staging Deploy
+    $ nvm use v16.20.2
+    $ export AWS_PROFILE=ravelpix
+    $ rm -rf node_modules/sharp && SHARP_IGNORE_GLOBAL_LIBVIPS=1 npm install --arch=x64 --platform=linux --libc=glibc sharp && sls deploy --stage staging
+
 #### Production Deploy
     $ nvm use v16.20.2
     $ export AWS_PROFILE=ravelpix
